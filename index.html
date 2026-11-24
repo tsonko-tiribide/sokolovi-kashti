@@ -2,10 +2,10 @@
 <html lang="bg">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>СОКОЛОВИ КЪЩИ</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:12px;color:#111;user-select:none}
+body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:12px;color:#111;user-select:none;-webkit-user-select:none}
 .box{max-width:1380px;margin:0 auto;background:#fff;padding:16px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
 h1{margin:0;font-size:20px}
@@ -18,10 +18,12 @@ h1{margin:0;font-size:20px}
 .bpaid{background:#fde047;color:#713f12}
 .checked{background:#7e22ce;color:#fff}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
-button{padding:7px 10px;border:none;border-radius:5px;background:#1d4ed8;color:#fff;font-weight:bold;cursor:pointer}
+button{padding:9px 12px;border:none;border-radius:6px;background:#1d4ed8;color:#fff;font-weight:bold;cursor:pointer;touch-action:manipulation;font-size:14px}
 button:hover{background:#1e40af}
 button.sec{background:#4b5563}
 button.sec:hover{background:#374151}
+button.sync-btn{background:#0369a1}
+button.sync-btn:hover{background:#075985}
 button.del{background:#dc2626}
 button.del:hover{background:#b91c1c}
 button.active-span{background:#0f766e}
@@ -32,7 +34,7 @@ button.bpaid-btn.is-on{background:#fde047;box-shadow:0 0 0 2px #713f12}
 .msg.err{background:#fee2e2;color:#991b1b}
 .warn{display:none;padding:10px 12px;border-radius:6px;margin-bottom:10px;font-size:13px;font-weight:bold;background:#fecaca;color:#991b1b;border:2px solid #dc2626}
 
-.wrap{max-height:70vh;overflow:auto;border:1px solid #ccc;border-radius:6px}
+.wrap{max-height:70vh;overflow:auto;border:1px solid #ccc;border-radius:6px;-webkit-overflow-scrolling:touch}
 table{border-collapse:collapse;width:100%;min-width:900px}
 th,td{border:1px solid #ccc;padding:7px;text-align:center;font-size:12px;min-width:116px;height:54px;vertical-align:middle}
 
@@ -46,31 +48,34 @@ thead th.sum-col{background:#dbeafe;color:#1e3a8a;font-size:12.5px;line-height:1
 .sum-zero{color:#9ca3af!important;font-weight:700!important}
 .sum-active{background:#eff6ff!important;color:#1e3a8a!important}
 
-td.c-free{background:#dcfce7;color:#166534;cursor:pointer;font-size:12px;font-weight:bold;letter-spacing:0.2px;white-space:nowrap}
+td.c-free{background:#dcfce7;color:#166534;cursor:pointer;font-size:12px;font-weight:bold;letter-spacing:0.2px;white-space:nowrap;touch-action:manipulation}
 td.c-free:hover{background:#bbf7d0}
-td.c-booked{background:#fee2e2;color:#991b1b;cursor:pointer}
-td.c-bpaid{background:#fde047;color:#713f12;cursor:pointer}
-td.c-checked{background:#7e22ce;color:#fff;cursor:pointer}
+td.c-booked{background:#fee2e2;color:#991b1b;cursor:pointer;touch-action:manipulation}
+td.c-bpaid{background:#fde047;color:#713f12;cursor:pointer;touch-action:manipulation}
+td.c-checked{background:#7e22ce;color:#fff;cursor:pointer;touch-action:manipulation}
 td.c-sel{outline:3px solid #2563eb;outline-offset:-3px}
 td.c-over{background:#dc2626;color:#fff}
 .mini{font-size:11px;margin-top:2px}
 .tot{font-size:11px;font-weight:bold;margin-top:3px;border-top:1px dashed currentColor;padding-top:2px}
 
-.bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:12px;z-index:50}
-.modal{background:#fff;padding:16px;border-radius:10px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;transition:background-color .15s ease,color .15s ease}
+.bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);align-items:flex-start;justify-content:center;padding:8px;z-index:50;overflow:hidden}
+.modal{background:#fff;border-radius:10px;max-width:520px;width:100%;max-height:88vh;max-height:88dvh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.25);transition:background-color .15s ease,color .15s ease}
 .modal.modal-yellow{background:#fde047;color:#111827;border:2px solid #a16207}
+.modal-body{padding:14px 16px 10px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto}
 .modal-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
 .full{grid-column:1/-1}
 label{display:block;font-size:12px;font-weight:bold;margin-bottom:3px}
-input,select{width:100%;padding:7px;border:1px solid #999;border-radius:5px;box-sizing:border-box;background:#fff;color:#111}
+input,select{width:100%;padding:8px;font-size:16px;border:1px solid #999;border-radius:5px;box-sizing:border-box;background:#fff;color:#111}
 .rooms-box{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;background:#f9fafb;border:1px solid #d1d5db;padding:8px;border-radius:6px}
-.room-chk{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:bold;cursor:pointer;margin:0;padding:4px 6px;border-radius:4px;background:#fff;border:1px solid #e5e7eb;color:#111}
+.room-chk{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:bold;cursor:pointer;margin:0;padding:6px;border-radius:4px;background:#fff;border:1px solid #e5e7eb;color:#111}
 .room-chk input{width:auto;margin:0;cursor:pointer}
 .total-input{background:#eff6ff;color:#1e3a8a;font-weight:bold;border-color:#93c5fd}
 .sumbox{background:#eff6ff;color:#1e3a8a;padding:8px;border-radius:6px;font-size:12px;font-weight:bold;margin-bottom:10px;border:1px solid #bfdbfe}
 .modal.modal-yellow .sumbox{background:#fef9c3;color:#713f12;border-color:#ca8a04}
-.act{display:flex;justify-content:space-between;gap:8px;margin-top:10px;flex-wrap:wrap}
+.act{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 16px calc(10px + env(safe-area-inset-bottom)) 16px;background:#f9fafb;border-top:1px solid #d1d5db;flex-shrink:0;flex-wrap:wrap}
+.modal.modal-yellow .act{background:#facc15;border-top-color:#a16207}
+.act button{min-height:42px;padding:10px 16px;font-size:15px}
 @media (max-width:520px){.row,.rooms-box{grid-template-columns:1fr}}
 </style>
 </head>
@@ -99,6 +104,10 @@ input,select{width:100%;padding:7px;border:1px solid #999;border-radius:5px;box-
       <button type="button" class="sec" onclick="shiftDays(7)">7 дни ▶</button>
       <button type="button" class="sec" onclick="shiftDays(30)">1 мес. ▶</button>
     </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <button type="button" class="sync-btn" onclick="exportBackupText()">Копирай данни</button>
+      <button type="button" class="sync-btn" onclick="importBackupText()">Постави данни</button>
+    </div>
     <span id="selInfo" style="font-size:12px;font-weight:bold;color:#1d4ed8"></span>
   </div>
   <div class="wrap"><table><thead><tr id="theadRow"></tr></thead><tbody id="tbodyRows"></tbody></table></div>
@@ -106,32 +115,34 @@ input,select{width:100%;padding:7px;border:1px solid #999;border-radius:5px;box-
 
 <div class="bg" id="modalBg" onclick="if(event.target.id==='modalBg')closeM()">
   <div class="modal" id="modalBox">
-    <div class="modal-head">
-      <h3 id="mTitle" style="margin:0">Резервация</h3>
-      <button type="button" id="btnBookingPaid" class="bpaid-btn" onclick="triggerBookingPaid()">БУКИНГ ПЛАТЕНО</button>
-    </div>
-    <div class="sumbox" id="mSum"></div>
-    <div class="row">
-      <div class="full">
-        <label>Маркирай стаи за госта (една или няколко стаи едновременно)</label>
-        <div class="rooms-box" id="roomsChecks">
-          <label class="room-chk"><input type="checkbox" value="1" onchange="calcModalTotal()"> Стая 1</label>
-          <label class="room-chk"><input type="checkbox" value="2" onchange="calcModalTotal()"> Стая 2</label>
-          <label class="room-chk"><input type="checkbox" value="3" onchange="calcModalTotal()"> Стая 3</label>
-          <label class="room-chk"><input type="checkbox" value="4" onchange="calcModalTotal()"> Стая 4</label>
-          <label class="room-chk"><input type="checkbox" value="5" onchange="calcModalTotal()"> Стая 5 Апартамент</label>
-          <label class="room-chk"><input type="checkbox" value="6" onchange="calcModalTotal()"> Стая 6</label>
-        </div>
+    <div class="modal-body">
+      <div class="modal-head">
+        <h3 id="mTitle" style="margin:0">Резервация</h3>
+        <button type="button" id="btnBookingPaid" class="bpaid-btn" onclick="triggerBookingPaid()">БУКИНГ ПЛАТЕНО</button>
       </div>
-      <div class="full"><label>Вид</label><select id="mMode" onchange="calcModalTotal()"><option value="booked">Заета (червено)</option><option value="bpaid">Booking платено (жълто)</option></select></div>
-      <div><label>Дата</label><input type="date" id="mDate" onchange="calcModalTotal()"></div>
-      <div><label>Нощувки</label><input type="number" id="mNights" min="1" max="180" value="1" oninput="calcModalTotal()" onchange="calcModalTotal()"></div>
-      <div class="full"><label>Гост / Фирма</label><input type="text" id="mGuest" oninput="calcModalTotal()"></div>
-      <div><label>Телефон на госта</label><input type="tel" id="mPhone"></div>
-      <div><label>Брой гости в стая</label><input type="number" id="mGuests" min="1" max="10" value="2" oninput="calcModalTotal()"></div>
-      <div class="full"><label>Статус</label><select id="mStatus" onchange="calcModalTotal()"><option value="Очаква настаняване">Очаква настаняване</option><option value="Настанена">Настанена</option></select></div>
-      <div class="full" id="priceWrap"><label>Цена / нощувка за стая (EUR)</label><input type="number" id="mPrice" step="any" placeholder="Въведи цена за нощувка" oninput="calcModalTotal()" onchange="calcModalTotal()"></div>
-      <div class="full" id="totalWrap"><label>Обща сума на резервацията на госта (EUR)</label><input type="text" id="mTotalField" class="total-input" readonly value="0 EUR"></div>
+      <div class="sumbox" id="mSum"></div>
+      <div class="row">
+        <div class="full">
+          <label>Маркирай стаи за госта (една или няколко стаи едновременно)</label>
+          <div class="rooms-box" id="roomsChecks">
+            <label class="room-chk"><input type="checkbox" value="1" onchange="calcModalTotal()"> Стая 1</label>
+            <label class="room-chk"><input type="checkbox" value="2" onchange="calcModalTotal()"> Стая 2</label>
+            <label class="room-chk"><input type="checkbox" value="3" onchange="calcModalTotal()"> Стая 3</label>
+            <label class="room-chk"><input type="checkbox" value="4" onchange="calcModalTotal()"> Стая 4</label>
+            <label class="room-chk"><input type="checkbox" value="5" onchange="calcModalTotal()"> Стая 5 Апартамент</label>
+            <label class="room-chk"><input type="checkbox" value="6" onchange="calcModalTotal()"> Стая 6</label>
+          </div>
+        </div>
+        <div class="full"><label>Вид</label><select id="mMode" onchange="calcModalTotal()"><option value="booked">Заета (червено)</option><option value="bpaid">Booking платено (жълто)</option></select></div>
+        <div><label>Дата</label><input type="date" id="mDate" onchange="calcModalTotal()"></div>
+        <div><label>Нощувки</label><input type="number" id="mNights" min="1" max="180" value="1" oninput="calcModalTotal()" onchange="calcModalTotal()"></div>
+        <div class="full"><label>Гост / Фирма</label><input type="text" id="mGuest" oninput="calcModalTotal()"></div>
+        <div><label>Телефон на госта</label><input type="tel" id="mPhone"></div>
+        <div><label>Брой гости в стая</label><input type="number" id="mGuests" min="1" max="10" value="2" oninput="calcModalTotal()"></div>
+        <div class="full"><label>Статус</label><select id="mStatus" onchange="calcModalTotal()"><option value="Очаква настаняване">Очаква настаняване</option><option value="Настанена">Настанена</option></select></div>
+        <div class="full" id="priceWrap"><label>Цена / нощувка за стая (EUR)</label><input type="number" id="mPrice" step="any" placeholder="Въведи цена за нощувка" oninput="calcModalTotal()" onchange="calcModalTotal()"></div>
+        <div class="full" id="totalWrap"><label>Обща сума на резервацията на госта (EUR)</label><input type="text" id="mTotalField" class="total-input" readonly value="0 EUR"></div>
+      </div>
     </div>
     <div class="act">
       <button type="button" class="del" id="mDel" style="display:none" onclick="delRes()">Анулирай</button>
@@ -148,6 +159,7 @@ let daysCount = 180;
 let offset = 0, editId = null, dragR = null, dragS = null, dragE = null, dragging = false;
 let selSet = new Set();
 let data = {};
+const isTouchDevice = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
 
 function isBookingPaidRecord(item) {
   if (!item || typeof item !== "object") return false;
@@ -264,6 +276,39 @@ async function persist() {
   }
 }
 
+async function exportBackupText() {
+  const txt = JSON.stringify(data);
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(txt);
+      msg("Данните са копирани! Можеш да ги поставиш (Paste) на друго устройство с бутона „Постави данни“.");
+      return;
+    }
+  } catch (e) {}
+  prompt("Копирай този текст (Ctrl+C / Copy):", txt);
+}
+
+async function importBackupText() {
+  const raw = prompt("Постави (Paste) копираните данни тук:");
+  if (!raw || !raw.trim()) return;
+  try {
+    const parsed = JSON.parse(raw.trim());
+    const norm = normalizeBookings(parsed);
+    const count = Object.keys(norm).length;
+    if (!count) {
+      msg("В поставения текст няма открити резервации.", true);
+      return;
+    }
+    data = norm;
+    await persist();
+    draw();
+    check1830();
+    msg(`Успешно заредени ${count} записа на стаи!`);
+  } catch (e) {
+    msg("Невалиден формат на данните. Увери се, че си копирал целия текст.", true);
+  }
+}
+
 function msg(t, err) {
   const b = document.getElementById("msgBox");
   b.textContent = t; b.className = err ? "msg err" : "msg"; b.style.display = "block";
@@ -359,6 +404,8 @@ function openNew(r, d, n) {
   document.getElementById("mStatus").value = "Очаква настаняване";
   document.getElementById("mPrice").value = "";
   calcModalTotal();
+  const bodyEl = document.querySelector("#modalBox .modal-body");
+  if (bodyEl) bodyEl.scrollTop = 0;
   document.getElementById("modalBg").style.display = "flex";
 }
 
@@ -385,6 +432,8 @@ function openEdit(r, d) {
   document.getElementById("mStatus").value = cur.status === "Настанена" ? "Настанена" : "Очаква настаняване";
   document.getElementById("mPrice").value = !isPaid && cur.price != null ? cur.price : "";
   calcModalTotal();
+  const bodyEl = document.querySelector("#modalBox .modal-body");
+  if (bodyEl) bodyEl.scrollTop = 0;
   document.getElementById("modalBg").style.display = "flex";
 }
 
@@ -456,19 +505,25 @@ function check1830() {
   w.textContent = "След 18:30 ч. — ненастанени гости за днес: " + list.join(" | "); w.style.display = "block";
 }
 
+function handleCellTap(r, d) {
+  if (data[`${r}_${d}`]) { openEdit(r, d); return; }
+  openNew(r, d, 1);
+}
+
 function onDown(ev, r, d) {
+  if (isTouchDevice) return;
   if (ev.button !== 0) return;
   if (data[`${r}_${d}`]) { openEdit(r, d); return; }
   dragging = true; dragR = r; dragS = d; dragE = d; updSel(r, d);
 }
-function onEnter(r, d) { if (dragging && r === dragR) { dragE = d; updSel(r, d); } }
+function onEnter(r, d) { if (!isTouchDevice && dragging && r === dragR) { dragE = d; updSel(r, d); } }
 function updSel(r, h) {
   selSet.clear(); const delta = diffD(dragS, h), s = delta >= 0 ? dragS : h, n = Math.abs(delta) + 1;
   for (let i = 0; i < n; i++) selSet.add(`${r}_${addD(s, i)}`);
   document.getElementById("selInfo").textContent = `${roomTitle(r)}: ${fmtBG(s)} (${n} нощ.)`; draw();
 }
 window.addEventListener("mouseup", () => {
-  if (!dragging) return; dragging = false;
+  if (isTouchDevice || !dragging) return; dragging = false;
   const r = dragR, s = dragS, e = dragE || dragS; dragR = dragS = dragE = null;
   if (!r || !s) return; const delta = diffD(s, e);
   openNew(r, delta >= 0 ? s : e, Math.abs(delta) + 1);
@@ -513,7 +568,7 @@ function draw() {
     for (let r = 1; r <= 6; r++) {
       const k = `${r}_${d}`, x = data[k], sel = selSet.has(k) ? "c-sel" : "";
       if (!x) {
-        tb += `<td class="c-free ${sel}" onmousedown="onDown(event,${r},'${d}')" onmouseenter="onEnter(${r},'${d}')">Свободна</td>`;
+        tb += `<td class="c-free ${sel}" onclick="if(isTouchDevice)handleCellTap(${r},'${d}')" onmousedown="onDown(event,${r},'${d}')" onmouseenter="onEnter(${r},'${d}')">Свободна</td>`;
         continue;
       }
       dayGuests += Math.max(1, Number(x.guests) || 2);
@@ -526,7 +581,7 @@ function draw() {
       const m = meta[x.id || k], last = m && d === m.maxD;
       const totHtml = (!paid && last && m && m.hasP) ? `<div class="tot">Общо: ${fmtNum(m.tot)}€</div>` : "";
       const prHtml = (!paid && x.price != null) ? `<div class="mini">${fmtNum(x.price)}€ / нощ.</div>` : "";
-      tb += `<td class="${cls} ${over} ${sel}" style="${inlineStyle}" onmousedown="onDown(event,${r},'${d}')" onmouseenter="onEnter(${r},'${d}')">
+      tb += `<td class="${cls} ${over} ${sel}" style="${inlineStyle}" onclick="if(isTouchDevice)handleCellTap(${r},'${d}')" onmousedown="onDown(event,${r},'${d}')" onmouseenter="onEnter(${r},'${d}')">
         <div><b>${x.guest}</b></div>
         ${paid ? `<div class="mini">booking платено</div>` : ""}
         <div class="mini">${x.guests || 2} гост(и)</div>
@@ -584,7 +639,7 @@ try {
       await setDoc(ref, { bookings: currentData, updatedAt: Date.now() });
       if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: локална + облак");
     } catch (e) {
-      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: запазено локално");
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: грешка облак (" + (e.code || "достъп") + ")");
     }
   };
 
@@ -597,8 +652,8 @@ try {
     } else {
       if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: локална (готов облак)");
     }
-  }, () => {
-    if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: запазено локално");
+  }, (err) => {
+    if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: грешка облак (" + (err.code || "достъп") + ")");
   });
 } catch (e) {
   if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: запазено локално");
