@@ -28,7 +28,7 @@ button.active-span{background:#0f766e}
 button.bpaid-btn{background:#eab308;color:#111827;border:2px solid #a16207}
 button.bpaid-btn:hover{background:#facc15}
 button.bpaid-btn.is-on{background:#fde047;box-shadow:0 0 0 2px #713f12}
-.msg{display:none;padding:9px 12px;border-radius:6px;margin-bottom:10px;font-size:13px;font-weight:bold;background:#dbeafe;color:#1e40af}
+.msg{display:none;padding:9px 12px;border-radius:6px;margin-bottom:10px;font-size:13px;font-weight:bold;background:#dbeafe;color:#1e3a8a}
 .msg.err{background:#fee2e2;color:#991b1b}
 .warn{display:none;padding:10px 12px;border-radius:6px;margin-bottom:10px;font-size:13px;font-weight:bold;background:#fecaca;color:#991b1b;border:2px solid #dc2626}
 
@@ -247,12 +247,21 @@ function setSpan(n) {
   draw();
 }
 
-function persist() {
+window.setMemBadge = function(t) {
+  const b = document.getElementById("memBadge");
+  if (b) b.textContent = t;
+};
+
+async function persist() {
   try {
     localStorage.setItem("sokolovi_v5", JSON.stringify(data));
     localStorage.setItem("sokolovi_cal_v4", JSON.stringify(data));
-    document.getElementById("memBadge").textContent = "Памет: запазено локално";
   } catch (e) {}
+  if (typeof window.syncCloudWrite === "function") {
+    await window.syncCloudWrite(data);
+  } else {
+    window.setMemBadge("Памет: запазено локално");
+  }
 }
 
 function msg(t, err) {
@@ -379,7 +388,7 @@ function openEdit(r, d) {
   document.getElementById("modalBg").style.display = "flex";
 }
 
-function saveRes() {
+async function saveRes() {
   const rooms = getSelectedRooms();
   if (!rooms.length) {
     msg("Моля, маркирайте поне една стая за резервацията.", true);
@@ -422,7 +431,7 @@ function saveRes() {
   }
 
   closeM();
-  persist();
+  await persist();
   draw(); check1830();
   const roomsText = rooms.map(roomTitle).join(", ");
   msg(
@@ -431,11 +440,11 @@ function saveRes() {
   );
 }
 
-function delRes() {
+async function delRes() {
   if (!editId || !confirm("Анулиране на резервацията?")) return;
   Object.keys(data).forEach(k => { if (data[k].id === editId) delete data[k]; });
   closeM();
-  persist();
+  await persist();
   draw(); check1830(); msg("Резервацията е анулирана.");
 }
 
@@ -532,9 +541,68 @@ function draw() {
   document.getElementById("tbodyRows").innerHTML = tb;
 }
 
+window.applyCloudData = function(cloudBookings) {
+  const norm = normalizeBookings(cloudBookings);
+  if (Object.keys(norm).length > 0 || Object.keys(data).length === 0) {
+    data = norm;
+    try {
+      localStorage.setItem("sokolovi_v5", JSON.stringify(data));
+      localStorage.setItem("sokolovi_cal_v4", JSON.stringify(data));
+    } catch (e) {}
+    draw();
+    check1830();
+  }
+};
+
 updateSpanButtons();
+window.setMemBadge("Памет: локална");
 draw(); check1830();
 setInterval(() => { draw(); check1830(); }, 30000);
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDxpVrE2pPlW_47t8bL8vHWZCxMcVBLPLw",
+  authDomain: "sokolovi-kashti-296ac.firebaseapp.com",
+  projectId: "sokolovi-kashti-296ac",
+  storageBucket: "sokolovi-kashti-296ac.firebasestorage.app",
+  messagingSenderId: "690017805688",
+  appId: "1:690017805688:web:c38a0cbba2bfda3364948d",
+  measurementId: "G-8Y4GPJ5E9D"
+};
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const ref = doc(db, "sokolovi_kashti", "calendar_v4");
+
+  window.syncCloudWrite = async function(currentData) {
+    try {
+      await setDoc(ref, { bookings: currentData, updatedAt: Date.now() });
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: локална + облак");
+    } catch (e) {
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: запазено локално");
+    }
+  };
+
+  onSnapshot(ref, (snap) => {
+    if (snap.exists() && snap.data() && snap.data().bookings) {
+      if (typeof window.applyCloudData === "function") {
+        window.applyCloudData(snap.data().bookings);
+      }
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: локална + облак");
+    } else {
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: локална (готов облак)");
+    }
+  }, () => {
+    if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: запазено локално");
+  });
+} catch (e) {
+  if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: запазено локално");
+}
 </script>
 </body>
 </html>
