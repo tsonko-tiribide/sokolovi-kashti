@@ -1,1 +1,689 @@
-https://github.com/tsonko-tiribide/sokolovi-kashti
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>СОКОЛОВИ КЪЩИ</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:12px;color:#111;user-select:none;-webkit-user-select:none}
+.box{max-width:1380px;margin:0 auto;background:#fff;padding:16px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+h1{margin:0;font-size:20px}
+.badge{font-size:12px;padding:4px 10px;border-radius:999px;background:#e5e7eb;color:#1f2937;font-weight:bold}
+.sub{font-size:12px;color:#555;margin-bottom:10px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;font-size:12px;font-weight:bold}
+.tag{padding:4px 8px;border-radius:5px}
+.free{background:#dcfce7;color:#166534}
+.booked{background:#fee2e2;color:#991b1b}
+.bpaid{background:#fde047;color:#713f12}
+.checked{background:#7e22ce;color:#fff}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+button{padding:9px 12px;border:none;border-radius:6px;background:#1d4ed8;color:#fff;font-weight:bold;cursor:pointer;touch-action:manipulation;font-size:14px}
+button:hover{background:#1e40af}
+button.sec{background:#4b5563}
+button.sec:hover{background:#374151}
+button.sync-btn{background:#0369a1}
+button.sync-btn:hover{background:#075985}
+button.del{background:#dc2626}
+button.del:hover{background:#b91c1c}
+button.active-span{background:#0f766e}
+button.bpaid-btn{background:#eab308;color:#111827;border:2px solid #a16207}
+button.bpaid-btn:hover{background:#facc15}
+button.bpaid-btn.is-on{background:#fde047;box-shadow:0 0 0 2px #713f12}
+.msg{display:none;padding:9px 12px;border-radius:6px;margin-bottom:10px;font-size:13px;font-weight:bold;background:#dbeafe;color:#1e3a8a}
+.msg.err{background:#fee2e2;color:#991b1b}
+.warn{display:none;padding:10px 12px;border-radius:6px;margin-bottom:10px;font-size:13px;font-weight:bold;background:#fecaca;color:#991b1b;border:2px solid #dc2626}
+
+.wrap{max-height:70vh;overflow:auto;border:1px solid #ccc;border-radius:6px;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:900px}
+th,td{border:1px solid #ccc;padding:7px;text-align:center;font-size:12px;min-width:116px;height:54px;vertical-align:middle}
+
+thead th{position:sticky;top:0;background:#f3f4f6;z-index:3;font-weight:800;font-size:14px;color:#111827;height:auto;padding:9px 7px}
+th.date-col,td.date-col{text-align:left;font-weight:700;font-size:13.5px;color:#111827;background:#fafafa;min-width:148px;position:sticky;left:0;z-index:2}
+thead th.date-col{z-index:4;background:#e5e7eb;font-size:14px;font-weight:800}
+.yr{font-weight:700;font-size:12.5px;color:#374151}
+
+th.sum-col,td.sum-col{min-width:94px;max-width:104px;background:#f8fafc;color:#0f172a;font-weight:800;font-size:13px;border-left:2px solid #94a3b8}
+thead th.sum-col{background:#dbeafe;color:#1e3a8a;font-size:12.5px;line-height:1.2}
+.sum-zero{color:#9ca3af!important;font-weight:700!important}
+.sum-active{background:#eff6ff!important;color:#1e3a8a!important}
+
+td.c-free{background:#dcfce7;color:#166534;cursor:pointer;font-size:12px;font-weight:bold;letter-spacing:0.2px;white-space:nowrap;touch-action:manipulation}
+td.c-free:hover{background:#bbf7d0}
+td.c-booked{background:#fee2e2;color:#991b1b;cursor:pointer;touch-action:manipulation}
+td.c-bpaid{background:#fde047;color:#713f12;cursor:pointer;touch-action:manipulation}
+td.c-checked{background:#7e22ce;color:#fff;cursor:pointer;touch-action:manipulation}
+td.c-sel{outline:3px solid #2563eb;outline-offset:-3px}
+td.c-over{background:#dc2626;color:#fff}
+.mini{font-size:11px;margin-top:2px}
+.tot{font-size:11px;font-weight:bold;margin-top:3px;border-top:1px dashed currentColor;padding-top:2px}
+
+.bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);align-items:flex-start;justify-content:center;padding:8px;z-index:50;overflow:hidden}
+.modal{background:#fff;border-radius:10px;max-width:520px;width:100%;max-height:88vh;max-height:88dvh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.25);transition:background-color .15s ease,color .15s ease}
+.modal.modal-yellow{background:#fde047;color:#111827;border:2px solid #a16207}
+.modal-body{padding:14px 16px 10px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto}
+.modal-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.full{grid-column:1/-1}
+label{display:block;font-size:12px;font-weight:bold;margin-bottom:3px}
+input,select{width:100%;padding:8px;font-size:16px;border:1px solid #999;border-radius:5px;box-sizing:border-box;background:#fff;color:#111}
+.rooms-box{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;background:#f9fafb;border:1px solid #d1d5db;padding:8px;border-radius:6px}
+.room-chk{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:bold;cursor:pointer;margin:0;padding:6px;border-radius:4px;background:#fff;border:1px solid #e5e7eb;color:#111}
+.room-chk input{width:auto;margin:0;cursor:pointer}
+.total-input{background:#eff6ff;color:#1e3a8a;font-weight:bold;border-color:#93c5fd}
+.sumbox{background:#eff6ff;color:#1e3a8a;padding:8px;border-radius:6px;font-size:12px;font-weight:bold;margin-bottom:10px;border:1px solid #bfdbfe}
+.modal.modal-yellow .sumbox{background:#fef9c3;color:#713f12;border-color:#ca8a04}
+.act{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 16px calc(10px + env(safe-area-inset-bottom)) 16px;background:#f9fafb;border-top:1px solid #d1d5db;flex-shrink:0;flex-wrap:wrap}
+.modal.modal-yellow .act{background:#facc15;border-top-color:#a16207}
+.act button{min-height:42px;padding:10px 16px;font-size:15px}
+
+@media (max-width:768px){
+  body{padding:6px}
+  .box{padding:10px;border-radius:8px}
+  h1{font-size:17px}
+  .bar{gap:5px}
+  button{padding:6px 7px;font-size:11.5px;border-radius:4px}
+  .wrap{max-height:74vh;max-height:74dvh;overflow-x:hidden;overflow-y:auto}
+  table{min-width:0;width:100%;table-layout:fixed}
+  th,td{min-width:0;width:auto;padding:2px;height:38px;font-size:10px;line-height:1.1}
+  thead th{padding:5px 1px;font-size:10px;word-break:break-word}
+  th.date-col,td.date-col{position:static;left:auto;width:62px;min-width:0;font-size:10px;padding:2px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  thead th.date-col{font-size:10px}
+  .yr{display:none}
+  th.sum-col,td.sum-col{width:34px;min-width:0;max-width:none;padding:2px 1px;font-size:10px;border-left:1px solid #94a3b8}
+  thead th.sum-col{font-size:9px;line-height:1.05}
+  td.c-free,td.c-booked,td.c-bpaid,td.c-checked{white-space:normal}
+  .cell-txt{display:none}
+}
+@media (max-width:520px){.row,.rooms-box{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="top">
+    <h1>СОКОЛОВИ КЪЩИ</h1>
+    <span class="badge" id="memBadge">Памет: локална</span>
+  </div>
+  <div class="sub" id="subRange"></div>
+  <div class="legend">
+    <span class="tag free">Зелено: Свободна</span>
+    <span class="tag booked">Червено: Заета</span>
+    <span class="tag bpaid">Жълто: booking платено</span>
+    <span class="tag checked">Лилаво: Настанена</span>
+  </div>
+  <div class="warn" id="warnBox"></div>
+  <div class="msg" id="msgBox"></div>
+  <div class="bar">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <button type="button" id="btn30" class="sec" onclick="setSpan(30)">30 дни</button>
+      <button type="button" id="btn180" class="active-span" onclick="setSpan(180)">180 дни (6 мес.)</button>
+      <button type="button" class="sec" onclick="shiftDays(-30)">◀ 1 мес.</button>
+      <button type="button" class="sec" onclick="shiftDays(-7)">◀ 7 дни</button>
+      <button type="button" class="sec" onclick="offset=0;draw()">Днес</button>
+      <button type="button" class="sec" onclick="shiftDays(7)">7 дни ▶</button>
+      <button type="button" class="sec" onclick="shiftDays(30)">1 мес. ▶</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <button type="button" class="sync-btn" onclick="exportBackupText()">Копирай данни</button>
+      <button type="button" class="sync-btn" onclick="importBackupText()">Постави данни</button>
+    </div>
+    <span id="selInfo" style="font-size:12px;font-weight:bold;color:#1d4ed8"></span>
+  </div>
+  <div class="wrap"><table><thead><tr id="theadRow"></tr></thead><tbody id="tbodyRows"></tbody></table></div>
+</div>
+
+<div class="bg" id="modalBg" onclick="if(event.target.id==='modalBg')closeM()">
+  <div class="modal" id="modalBox">
+    <div class="modal-body">
+      <div class="modal-head">
+        <h3 id="mTitle" style="margin:0">Резервация</h3>
+        <button type="button" id="btnBookingPaid" class="bpaid-btn" onclick="triggerBookingPaid()">БУКИНГ ПЛАТЕНО</button>
+      </div>
+      <div class="sumbox" id="mSum"></div>
+      <div class="row">
+        <div class="full">
+          <label>Маркирай стаи за госта (една или няколко стаи едновременно)</label>
+          <div class="rooms-box" id="roomsChecks">
+            <label class="room-chk"><input type="checkbox" value="1" onchange="calcModalTotal()"> Стая 1</label>
+            <label class="room-chk"><input type="checkbox" value="2" onchange="calcModalTotal()"> Стая 2</label>
+            <label class="room-chk"><input type="checkbox" value="3" onchange="calcModalTotal()"> Стая 3</label>
+            <label class="room-chk"><input type="checkbox" value="4" onchange="calcModalTotal()"> Стая 4</label>
+            <label class="room-chk"><input type="checkbox" value="5" onchange="calcModalTotal()"> Стая 5 Апартамент</label>
+            <label class="room-chk"><input type="checkbox" value="6" onchange="calcModalTotal()"> Стая 6</label>
+          </div>
+        </div>
+        <div class="full"><label>Вид</label><select id="mMode" onchange="calcModalTotal()"><option value="booked">Заета (червено)</option><option value="bpaid">Booking платено (жълто)</option></select></div>
+        <div><label>Дата</label><input type="date" id="mDate" onchange="calcModalTotal()"></div>
+        <div><label>Нощувки</label><input type="number" id="mNights" min="1" max="180" value="1" oninput="calcModalTotal()" onchange="calcModalTotal()"></div>
+        <div class="full"><label>Гост / Фирма</label><input type="text" id="mGuest" oninput="calcModalTotal()"></div>
+        <div><label>Телефон на госта</label><input type="tel" id="mPhone"></div>
+        <div><label>Брой гости в стая</label><input type="number" id="mGuests" min="1" max="10" value="2" oninput="calcModalTotal()"></div>
+        <div class="full"><label>Статус</label><select id="mStatus" onchange="calcModalTotal()"><option value="Очаква настаняване">Очаква настаняване</option><option value="Настанена">Настанена</option></select></div>
+        <div class="full" id="priceWrap"><label>Цена / нощувка за стая (EUR)</label><input type="number" id="mPrice" step="any" placeholder="Въведи цена за нощувка" oninput="calcModalTotal()" onchange="calcModalTotal()"></div>
+        <div class="full" id="totalWrap"><label>Обща сума на резервацията на госта (EUR)</label><input type="text" id="mTotalField" class="total-input" readonly value="0 EUR"></div>
+      </div>
+    </div>
+    <div class="act">
+      <button type="button" class="del" id="mDel" style="display:none" onclick="delRes()">Анулирай</button>
+      <div style="display:flex;gap:8px;margin-left:auto">
+        <button type="button" class="sec" onclick="closeM()">Отказ</button>
+        <button type="button" onclick="saveRes()">Запиши</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let daysCount = 180;
+let offset = 0, editId = null, dragR = null, dragS = null, dragE = null, dragging = false;
+let selSet = new Set();
+let data = {};
+const isCompactMobile = () => window.innerWidth <= 768;
+
+function isBookingPaidRecord(item) {
+  if (!item || typeof item !== "object") return false;
+  const m = String(item.mode || "").toLowerCase();
+  const ch = String(item.channel || "").toLowerCase();
+  const g = String(item.guest || "").toLowerCase();
+  return (
+    m === "bpaid" ||
+    m === "booking_paid" ||
+    m === "booking" ||
+    ch === "booking" ||
+    g.includes("booking") ||
+    g.includes("букинг")
+  );
+}
+
+function normalizeBookings(rawObj) {
+  const norm = {};
+  if (!rawObj || typeof rawObj !== "object") return norm;
+  for (const [key, item] of Object.entries(rawObj)) {
+    if (!item || typeof item !== "object") continue;
+    const mode = isBookingPaidRecord(item) ? "bpaid" : "booked";
+    norm[key] = {
+      id: item.id || item.bookingId || key,
+      room: Number(item.room),
+      date: item.date,
+      mode,
+      guest: item.guest || "Резервация",
+      phone: item.phone || "",
+      guests: Number(item.guests || item.guestsCount || 2),
+      status: item.status === "Настанена" ? "Настанена" : "Очаква настаняване",
+      price: (item.price === "" || item.price === null || item.price === undefined || isNaN(Number(item.price))) ? null : Number(item.price)
+    };
+  }
+  return norm;
+}
+
+function loadInitialData() {
+  try {
+    const savedSpan = Number(localStorage.getItem("sokolovi_span_days"));
+    if (savedSpan === 30 || savedSpan === 180) daysCount = savedSpan;
+  } catch (e) {}
+
+  const keys = ["sokolovi_v5", "sokolovi_cal_v4", "sokolovi_cal_v3"];
+  for (const k of keys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (!raw) continue;
+      const norm = normalizeBookings(JSON.parse(raw));
+      if (Object.keys(norm).length) return norm;
+    } catch (e) {}
+  }
+  return {};
+}
+
+data = loadInitialData();
+
+const pad = n => String(n).padStart(2, "0");
+const iso = dt => `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+const addD = (s, d) => { const [y, m, day] = s.split("-").map(Number); return iso(new Date(y, m - 1, day + d)); };
+const diffD = (a, b) => { const [ay, am, ad] = a.split("-").map(Number), [by, bm, bd] = b.split("-").map(Number); return Math.round((Date.UTC(by, bm - 1, bd) - Date.UTC(ay, am - 1, ad)) / 86400000); };
+const fmtBG = s => { const [y, m, d] = s.split("-"); return `${d}.${m}.${y}`; };
+const shortBG = s => { const [y, m, d] = s.split("-").map(Number), w = ["нд", "пн", "вт", "ср", "чт", "пт", "сб"]; return `${w[new Date(y, m - 1, d).getDay()]} ${pad(d)}.${pad(m)}`; };
+const mobileDateBG = s => { const [y, m, d] = s.split("-").map(Number), w = ["нд", "пн", "вт", "ср", "чт", "пт", "сб"]; return `${w[new Date(y, m - 1, d).getDay()]} ${pad(d)}.${pad(m)}`; };
+const shiftDays = d => { offset += d; draw(); };
+const roomTitle = r => r === 5 ? "Стая 5 Апартамент" : `Стая ${r}`;
+const mobileRoomTitle = r => r === 5 ? "5 ап." : `Ст.${r}`;
+const roomsWord = n => n === 1 ? "1 стая" : `${n} стаи`;
+const fmtNum = n => {
+  const rounded = Math.round(n * 100) / 100;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
+};
+
+function getSelectedRooms() {
+  return Array.from(document.querySelectorAll('#roomsChecks input[type="checkbox"]:checked'))
+    .map(cb => Number(cb.value))
+    .sort((a, b) => a - b);
+}
+
+function setSelectedRooms(roomArr) {
+  const wanted = new Set((roomArr || []).map(Number));
+  document.querySelectorAll('#roomsChecks input[type="checkbox"]').forEach(cb => {
+    cb.checked = wanted.has(Number(cb.value));
+  });
+}
+
+function updateSpanButtons() {
+  const b30 = document.getElementById("btn30");
+  const b180 = document.getElementById("btn180");
+  if (!b30 || !b180) return;
+  b30.className = daysCount === 30 ? "active-span" : "sec";
+  b180.className = daysCount === 180 ? "active-span" : "sec";
+}
+
+function setSpan(n) {
+  daysCount = n === 30 ? 30 : 180;
+  try { localStorage.setItem("sokolovi_span_days", String(daysCount)); } catch (e) {}
+  updateSpanButtons();
+  draw();
+}
+
+window.setMemBadge = function(t) {
+  const b = document.getElementById("memBadge");
+  if (b) b.textContent = t;
+};
+
+async function persist() {
+  try {
+    localStorage.setItem("sokolovi_v5", JSON.stringify(data));
+    localStorage.setItem("sokolovi_cal_v4", JSON.stringify(data));
+  } catch (e) {}
+  if (typeof window.syncCloudWrite === "function") {
+    await window.syncCloudWrite(data);
+  } else {
+    window.setMemBadge("Памет: запазено локално");
+  }
+}
+
+async function exportBackupText() {
+  const txt = JSON.stringify(data);
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(txt);
+      msg("Данните са копирани! Можеш да ги поставиш (Paste) на друго устройство с бутона „Постави данни“.");
+      return;
+    }
+  } catch (e) {}
+  prompt("Копирай този текст (Ctrl+C / Copy):", txt);
+}
+
+async function importBackupText() {
+  const raw = prompt("Постави (Paste) копираните данни тук:");
+  if (!raw || !raw.trim()) return;
+  try {
+    const parsed = JSON.parse(raw.trim());
+    const norm = normalizeBookings(parsed);
+    const count = Object.keys(norm).length;
+    if (!count) {
+      msg("В поставения текст няма открити резервации.", true);
+      return;
+    }
+    data = norm;
+    await persist();
+    draw();
+    check1830();
+    msg(`Успешно заредени ${count} записа на стаи!`);
+  } catch (e) {
+    msg("Невалиден формат на данните. Увери се, че си копирал целия текст.", true);
+  }
+}
+
+function msg(t, err) {
+  const b = document.getElementById("msgBox");
+  b.textContent = t; b.className = err ? "msg err" : "msg"; b.style.display = "block";
+}
+function closeM() {
+  document.getElementById("modalBg").style.display = "none";
+  document.getElementById("modalBox").classList.remove("modal-yellow");
+  editId = null; selSet.clear(); document.getElementById("selInfo").textContent = ""; draw();
+}
+
+function triggerBookingPaid() {
+  document.getElementById("mMode").value = "bpaid";
+  const guestInput = document.getElementById("mGuest");
+  if (!guestInput.value.trim()) {
+    guestInput.value = "БУКИНГ ПЛАТЕНО";
+  }
+  calcModalTotal();
+}
+
+function syncModalYellowState() {
+  const modalBox = document.getElementById("modalBox");
+  const btnBpaid = document.getElementById("btnBookingPaid");
+  const mode = document.getElementById("mMode").value;
+  const st = document.getElementById("mStatus").value;
+  const isYellow = mode === "bpaid" && st !== "Настанена";
+  if (isYellow) {
+    modalBox.classList.add("modal-yellow");
+  } else {
+    modalBox.classList.remove("modal-yellow");
+  }
+  if (mode === "bpaid") {
+    btnBpaid.classList.add("is-on");
+  } else {
+    btnBpaid.classList.remove("is-on");
+  }
+}
+
+function calcModalTotal() {
+  const mode = document.getElementById("mMode").value;
+  const priceWrap = document.getElementById("priceWrap");
+  const totalWrap = document.getElementById("totalWrap");
+  const totalField = document.getElementById("mTotalField");
+  const selRooms = getSelectedRooms();
+  const roomsCount = selRooms.length;
+  const roomsLabel = roomsCount ? selRooms.map(roomTitle).join(", ") : "Няма избрана стая";
+  const d = document.getElementById("mDate").value || iso(new Date());
+  const n = Math.max(1, parseInt(document.getElementById("mNights").value, 10) || 1);
+  const g = Math.max(1, parseInt(document.getElementById("mGuests").value, 10) || 1);
+  const st = document.getElementById("mStatus").value;
+  const guestName = document.getElementById("mGuest").value.trim() || "Гост";
+  const rawPrice = String(document.getElementById("mPrice").value || "").replace(",", ".").trim();
+  const unitPrice = rawPrice !== "" && !Number.isNaN(Number(rawPrice)) ? Number(rawPrice) : null;
+
+  syncModalYellowState();
+
+  if (mode === "bpaid") {
+    priceWrap.style.display = "none";
+    totalWrap.style.display = "none";
+    totalField.value = "";
+    document.getElementById("mSum").textContent =
+      `${guestName} · ${roomsWord(roomsCount)} (${roomsLabel}) · ${g} гост(и)/стая · ${fmtBG(d)} (${n} нощ.) · ${st} · booking платено`;
+    return;
+  }
+
+  priceWrap.style.display = "block";
+  totalWrap.style.display = "block";
+
+  if (unitPrice !== null && roomsCount > 0) {
+    const totalRes = unitPrice * n * roomsCount;
+    const totalStr = fmtNum(totalRes);
+    const unitStr = fmtNum(unitPrice);
+    totalField.value = `${totalStr} EUR`;
+    document.getElementById("mSum").textContent =
+      `${guestName} · ${roomsWord(roomsCount)} (${roomsLabel}) · ${roomsWord(roomsCount)} × ${unitStr}€ × ${n} нощ. = ${totalStr}€ (${st})`;
+  } else {
+    totalField.value = roomsCount === 0 ? "0 EUR (избери стая)" : "0 EUR";
+    document.getElementById("mSum").textContent =
+      `${guestName} · ${roomsWord(roomsCount)} (${roomsLabel}) · ${g} гост(и)/стая · ${fmtBG(d)} (${n} нощ.) · ${st} · въведи цена`;
+  }
+}
+
+function openNew(r, d, n) {
+  editId = null;
+  document.getElementById("mTitle").textContent = "Нова резервация";
+  document.getElementById("mDel").style.display = "none";
+  setSelectedRooms([r]);
+  document.getElementById("mMode").value = "booked";
+  document.getElementById("mDate").value = d;
+  document.getElementById("mNights").value = n;
+  document.getElementById("mGuest").value = "";
+  document.getElementById("mPhone").value = "";
+  document.getElementById("mGuests").value = "2";
+  document.getElementById("mStatus").value = "Очаква настаняване";
+  document.getElementById("mPrice").value = "";
+  calcModalTotal();
+  const bodyEl = document.querySelector("#modalBox .modal-body");
+  if (bodyEl) bodyEl.scrollTop = 0;
+  document.getElementById("modalBg").style.display = "flex";
+}
+
+function openEdit(r, d) {
+  const cur = data[`${r}_${d}`]; if (!cur) return;
+  editId = cur.id || `${r}_${d}`;
+  const grp = Object.values(data).filter(x => (x.id || `${x.room}_${x.date}`) === editId).sort((a, b) => a.date.localeCompare(b.date));
+  const roomsInGroup = Array.from(new Set(grp.map(x => Number(x.room)).filter(Boolean))).sort((a, b) => a - b);
+  const datesInGroup = Array.from(new Set(grp.map(x => x.date))).sort();
+  const nightsLen = datesInGroup.length || 1;
+  const isPaid = isBookingPaidRecord(cur);
+
+  document.getElementById("mTitle").textContent = roomsInGroup.length > 1
+    ? `Корекция на резервация (${roomsWord(roomsInGroup.length)})`
+    : "Корекция на резервация";
+  document.getElementById("mDel").style.display = "inline-block";
+  setSelectedRooms(roomsInGroup.length ? roomsInGroup : [cur.room]);
+  document.getElementById("mMode").value = isPaid ? "bpaid" : "booked";
+  document.getElementById("mDate").value = datesInGroup[0] || cur.date;
+  document.getElementById("mNights").value = nightsLen;
+  document.getElementById("mGuest").value = cur.guest || "";
+  document.getElementById("mPhone").value = cur.phone || "";
+  document.getElementById("mGuests").value = cur.guests || 2;
+  document.getElementById("mStatus").value = cur.status === "Настанена" ? "Настанена" : "Очаква настаняване";
+  document.getElementById("mPrice").value = !isPaid && cur.price != null ? cur.price : "";
+  calcModalTotal();
+  const bodyEl = document.querySelector("#modalBox .modal-body");
+  if (bodyEl) bodyEl.scrollTop = 0;
+  document.getElementById("modalBg").style.display = "flex";
+}
+
+async function saveRes() {
+  const rooms = getSelectedRooms();
+  if (!rooms.length) {
+    msg("Моля, маркирайте поне една стая за резервацията.", true);
+    return;
+  }
+
+  const rawGuest = document.getElementById("mGuest").value.trim();
+  const gLower = rawGuest.toLowerCase();
+  const mode = (document.getElementById("mMode").value === "bpaid" || gLower.includes("booking") || gLower.includes("букинг")) ? "bpaid" : "booked";
+  const guest = rawGuest || (mode === "bpaid" ? "БУКИНГ ПЛАТЕНО" : "Резервация");
+  const d = document.getElementById("mDate").value || iso(new Date());
+  const n = Math.max(1, Math.min(180, parseInt(document.getElementById("mNights").value, 10) || 1));
+  const phone = document.getElementById("mPhone").value.trim();
+  const guests = Math.max(1, parseInt(document.getElementById("mGuests").value, 10) || 1);
+  const status = document.getElementById("mStatus").value === "Настанена" ? "Настанена" : "Очаква настаняване";
+  const rawP = String(document.getElementById("mPrice").value || "").replace(",", ".").trim();
+  const price = mode !== "bpaid" && rawP !== "" && !Number.isNaN(Number(rawP)) ? Number(rawP) : null;
+  const totalGuestAmount = (mode !== "bpaid" && price != null) ? (price * n * rooms.length) : null;
+
+  for (const r of rooms) {
+    for (let i = 0; i < n; i++) {
+      const k = `${r}_${addD(d, i)}`;
+      const ex = data[k];
+      if (ex && (!editId || ex.id !== editId)) {
+        closeM();
+        msg(`${roomTitle(r)} вече е заета на ${fmtBG(addD(d, i))} (${ex.guest}).`, true);
+        return;
+      }
+    }
+  }
+
+  const id = editId || `r_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+  if (editId) Object.keys(data).forEach(k => { if (data[k].id === editId) delete data[k]; });
+
+  for (const r of rooms) {
+    for (let i = 0; i < n; i++) {
+      const day = addD(d, i);
+      data[`${r}_${day}`] = { id, room: r, date: day, mode, guest, phone, guests, status, price };
+    }
+  }
+
+  closeM();
+  await persist();
+  draw(); check1830();
+  const roomsText = rooms.map(roomTitle).join(", ");
+  msg(
+    `Записано за ${guest} — ${roomsText} (${guests} гост(и)/стая, ${status})` +
+    `${mode === "bpaid" ? " · booking платено" : (totalGuestAmount != null ? ` · Общо за госта: ${fmtNum(totalGuestAmount)}€` : "")}.`
+  );
+}
+
+async function delRes() {
+  if (!editId || !confirm("Анулиране на резервацията?")) return;
+  Object.keys(data).forEach(k => { if (data[k].id === editId) delete data[k]; });
+  closeM();
+  await persist();
+  draw(); check1830(); msg("Резервацията е анулирана.");
+}
+
+function check1830() {
+  const now = new Date(), past = (now.getHours() * 60 + now.getMinutes()) >= 1110, today = iso(now), list = [];
+  if (past) for (let r = 1; r <= 6; r++) { const it = data[`${r}_${today}`]; if (it && it.status !== "Настанена") list.push(`${roomTitle(r)}: ${it.guest}${it.phone ? ` (${it.phone})` : ""}`); }
+  const w = document.getElementById("warnBox");
+  if (!list.length) { w.style.display = "none"; return; }
+  w.textContent = "След 18:30 ч. — ненастанени гости за днес: " + list.join(" | "); w.style.display = "block";
+}
+
+function handleCellTap(r, d) {
+  if (data[`${r}_${d}`]) { openEdit(r, d); return; }
+  openNew(r, d, 1);
+}
+
+function onDown(ev, r, d) {
+  if (isCompactMobile()) return;
+  if (ev.button !== 0) return;
+  if (data[`${r}_${d}`]) { openEdit(r, d); return; }
+  dragging = true; dragR = r; dragS = d; dragE = d; updSel(r, d);
+}
+function onEnter(r, d) { if (!isCompactMobile() && dragging && r === dragR) { dragE = d; updSel(r, d); } }
+function updSel(r, h) {
+  selSet.clear(); const delta = diffD(dragS, h), s = delta >= 0 ? dragS : h, n = Math.abs(delta) + 1;
+  for (let i = 0; i < n; i++) selSet.add(`${r}_${addD(s, i)}`);
+  document.getElementById("selInfo").textContent = `${roomTitle(r)}: ${fmtBG(s)} (${n} нощ.)`; draw();
+}
+window.addEventListener("mouseup", () => {
+  if (isCompactMobile() || !dragging) return; dragging = false;
+  const r = dragR, s = dragS, e = dragE || dragS; dragR = dragS = dragE = null;
+  if (!r || !s) return; const delta = diffD(s, e);
+  openNew(r, delta >= 0 ? s : e, Math.abs(delta) + 1);
+});
+window.addEventListener("resize", () => draw());
+
+function getCellInlineStyle(checked, paid, isOver) {
+  if (checked) return "background:#7e22ce;color:#fff;";
+  if (paid) return "background:#fde047;color:#713f12;";
+  if (isOver) return "background:#dc2626;color:#fff;";
+  return "background:#fee2e2;color:#991b1b;";
+}
+
+function draw() {
+  const compact = isCompactMobile();
+  const today = iso(new Date()), now = new Date(), past = (now.getHours() * 60 + now.getMinutes()) >= 1110;
+  const base = addD(today, offset), end = addD(base, daysCount - 1);
+  const spanLabel = daysCount === 30 ? "30 дни" : "6 месеца (180 дни)";
+  document.getElementById("subRange").textContent = `${spanLabel}: ${fmtBG(base)} – ${fmtBG(end)} · Днес: ${fmtBG(today)}`;
+
+  const meta = {};
+  Object.values(data).forEach(x => {
+    const id = x.id || `${x.room}_${x.date}`;
+    if (!meta[id]) meta[id] = { tot: 0, hasP: false, maxD: x.date };
+    if (!isBookingPaidRecord(x) && x.price != null && !isNaN(Number(x.price))) {
+      meta[id].tot += Number(x.price);
+      meta[id].hasP = true;
+    }
+    if (x.date > meta[id].maxD) meta[id].maxD = x.date;
+  });
+
+  let th = `<th class="date-col">${compact ? "Дата" : "Дата / Календар"}</th>`;
+  for (let r = 1; r <= 6; r++) {
+    th += `<th>${compact ? mobileRoomTitle(r) : roomTitle(r)}</th>`;
+  }
+  th += `<th class="sum-col">${compact ? "Гости" : "Брой гости<br>за деня"}</th>`;
+  document.getElementById("theadRow").innerHTML = th;
+
+  let tb = "";
+  for (let i = 0; i < daysCount; i++) {
+    const d = addD(base, i);
+    let dayGuests = 0;
+    const dateLabel = compact
+      ? mobileDateBG(d)
+      : `${shortBG(d)} <span class="yr">(${d.slice(0,4)})</span>`;
+    tb += `<tr><td class="date-col">${dateLabel}</td>`;
+    for (let r = 1; r <= 6; r++) {
+      const k = `${r}_${d}`, x = data[k], sel = selSet.has(k) ? "c-sel" : "";
+      if (!x) {
+        tb += `<td class="c-free ${sel}" onclick="if(isCompactMobile())handleCellTap(${r},'${d}')" onmousedown="onDown(event,${r},'${d}')" onmouseenter="onEnter(${r},'${d}')"><span class="cell-txt">Свободна</span></td>`;
+        continue;
+      }
+      dayGuests += Math.max(1, Number(x.guests) || 2);
+      const checked = x.status === "Настанена";
+      const paid = isBookingPaidRecord(x);
+      const cls = checked ? "c-checked" : (paid ? "c-bpaid" : "c-booked");
+      const isOver = d === today && past && !checked;
+      const over = isOver ? "c-over" : "";
+      const inlineStyle = getCellInlineStyle(checked, paid, isOver);
+      const m = meta[x.id || k], last = m && d === m.maxD;
+      const totHtml = (!paid && last && m && m.hasP) ? `<div class="tot">Общо: ${fmtNum(m.tot)}€</div>` : "";
+      const prHtml = (!paid && x.price != null) ? `<div class="mini">${fmtNum(x.price)}€ / нощ.</div>` : "";
+      tb += `<td class="${cls} ${over} ${sel}" style="${inlineStyle}" onclick="if(isCompactMobile())handleCellTap(${r},'${d}')" onmousedown="onDown(event,${r},'${d}')" onmouseenter="onEnter(${r},'${d}')"><div class="cell-txt">
+        <div><b>${x.guest}</b></div>
+        ${paid ? `<div class="mini">booking платено</div>` : ""}
+        <div class="mini">${x.guests || 2} гост(и)</div>
+        ${x.phone ? `<div class="mini">Тел: ${x.phone}</div>` : ""}
+        ${prHtml}${totHtml}
+      </div></td>`;
+    }
+    const sumCls = dayGuests > 0 ? "sum-col sum-active" : "sum-col sum-zero";
+    const sumText = compact ? (dayGuests > 0 ? `${dayGuests}` : "0") : (dayGuests > 0 ? `${dayGuests} гост(и)` : "0");
+    tb += `<td class="${sumCls}">${sumText}</td></tr>`;
+  }
+  document.getElementById("tbodyRows").innerHTML = tb;
+}
+
+window.applyCloudData = function(cloudBookings) {
+  const norm = normalizeBookings(cloudBookings);
+  if (Object.keys(norm).length > 0 || Object.keys(data).length === 0) {
+    data = norm;
+    try {
+      localStorage.setItem("sokolovi_v5", JSON.stringify(data));
+      localStorage.setItem("sokolovi_cal_v4", JSON.stringify(data));
+    } catch (e) {}
+    draw();
+    check1830();
+  }
+};
+
+updateSpanButtons();
+window.setMemBadge("Памет: локална");
+draw(); check1830();
+setInterval(() => { draw(); check1830(); }, 30000);
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDxpVrE2pPlW_47t8bL8vHWZCxMcVBLPLw",
+  authDomain: "sokolovi-kashti-296ac.firebaseapp.com",
+  projectId: "sokolovi-kashti-296ac",
+  storageBucket: "sokolovi-kashti-296ac.firebasestorage.app",
+  messagingSenderId: "690017805688",
+  appId: "1:690017805688:web:c38a0cbba2bfda3364948d",
+  measurementId: "G-8Y4GPJ5E9D"
+};
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const ref = doc(db, "sokolovi_kashti", "calendar_v4");
+
+  window.syncCloudWrite = async function(currentData) {
+    try {
+      await setDoc(ref, { bookings: currentData, updatedAt: Date.now() });
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: локална + облак");
+    } catch (e) {
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: грешка облак (" + (e.code || "достъп") + ")");
+    }
+  };
+
+  onSnapshot(ref, (snap) => {
+    if (snap.exists() && snap.data() && snap.data().bookings) {
+      if (typeof window.applyCloudData === "function") {
+        window.applyCloudData(snap.data().bookings);
+      }
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: локална + облак");
+    } else {
+      if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: локална (готов облак)");
+    }
+  }, (err) => {
+    if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: грешка облак (" + (err.code || "достъп") + ")");
+  });
+} catch (e) {
+  if (typeof window.setMemBadge === "function") window.setMemBadge("Памет: запазено локално");
+}
+</script>
+</body>
+</html>
